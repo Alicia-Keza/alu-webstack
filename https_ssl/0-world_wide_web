@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2086
+
+domain=$1
+subdomain=$2
+
+get_record() {
+    result=$(dig ${1}.${2} | awk '/ANSWER SECTION:/ {getline; print $4, $5}')
+    
+    type=$(echo $result | awk '{print $1}')
+    dest=$(echo $result | awk '{print $2}')
+    
+    echo "The subdomain ${1} is a ${type} record and points to ${dest}"
+}
+
+if [ -z "$subdomain" ]; then
+    for sub in www lb-01 web-01 web-02
+    do
+        get_record $sub $domain
+    done
+else
+    get_record $subdomain $domain
+fi
