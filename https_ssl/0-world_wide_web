@@ -1,23 +1,20 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2086
+# Script to display DNS records of subdomains
 
 domain=$1
 subdomain=$2
 
 get_record() {
-    result=$(dig ${1}.${2} | awk '/ANSWER SECTION:/ {getline; print $4, $5}')
-    
-    type=$(echo $result | awk '{print $1}')
-    dest=$(echo $result | awk '{print $2}')
-    
-    echo "The subdomain ${1} is a ${type} record and points to ${dest}"
+    sub=$1
+    ip=$(dig +short "$sub.$domain" | awk '{print $1}')
+    echo "The subdomain $sub is a A record and points to $ip"
 }
 
 if [ -z "$subdomain" ]; then
     for sub in www lb-01 web-01 web-02
     do
-        get_record $sub $domain
+        get_record "$sub"
     done
 else
-    get_record $subdomain $domain
+    get_record "$subdomain"
 fi
