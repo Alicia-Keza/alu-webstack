@@ -1,20 +1,23 @@
 #!/usr/bin/env bash
-# Script to display DNS information for subdomains
+# This script displays DNS A records for given subdomains
 
 domain=$1
 subdomain=$2
 
 get_record() {
     sub=$1
-    ip=$(dig +short "$sub.$domain" | awk '{print $1}')
-    echo "The subdomain $sub is a A record and points to $ip"
+    dom=$2
+
+    ip=$(dig +short "${sub}.${dom}")
+
+    echo "The subdomain ${sub} is a A record and points to ${ip}"
 }
 
 if [ -z "$subdomain" ]; then
     for sub in www lb-01 web-01 web-02
     do
-        get_record "$sub"
+        get_record "$sub" "$domain"
     done
 else
-    get_record "$subdomain"
+    get_record "$subdomain" "$domain"
 fi
