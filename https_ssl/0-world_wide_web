@@ -8,7 +8,7 @@ get_dns_info() {
     local query="${sub}.${dom}"
     
 
-    dig "$query" | awk -v sub="$sub" '/IN[[:space:]]+A/ { print "The subdomain " sub " is a " $4 " record and points to " $5 }'
+    dig "$query" | awk -v sname="$sub" '/IN[[:space:]]+A/ { print "The subdomain " sname " is a " $4 " record and points to " $5 }'
 }
 
 domain=$1
