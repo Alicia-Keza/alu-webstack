@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# script to display information about subdomains
+# Script to display DNS information about subdomains using dig and awk
 
-display_info() {
-    # shellcheck disable=SC2086
-    dig $2.$1 | awk -v sub="$2" '/^;; ANSWER SECTION:/ {
-        getline
-        print "The subdomain " sub " is a " $4 " record and points to " $5
-    }'
+display_subdomain_info() {
+	local domain="$1"
+	local subdomain="$2"
+	# shellcheck disable=SC2086
+	dig "$subdomain.$domain" | awk -v sub="$subdomain" \
+		'$3 == "IN" && $4 == "A" {print "The subdomain " sub " is a " $4 " record and points to " $5; exit}'
 }
 
-if [ $# -eq 1 ]; then
-    display_info $1 www
-    display_info $1 lb-01
-    display_info $1 web-01
-    display_info $1 web-02
-elif [ $# -eq 2 ]; then
-    display_info $1 $2
+if [ "$#" -eq 1 ]; then
+	display_subdomain_info "$1" www
+	display_subdomain_info "$1" lb-01
+	display_subdomain_info "$1" web-01
+	display_subdomain_info "$1" web-02
+elif [ "$#" -eq 2 ]; then
+	display_subdomain_info "$1" "$2"
 fi
